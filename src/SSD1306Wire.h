@@ -33,7 +33,6 @@
 
 #include "OLEDDisplay.h"
 #include <Wire.h>
-#include <algorithm>
 
 #if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_STM32)
 #define _min	min
@@ -75,15 +74,15 @@ class SSD1306Wire : public OLEDDisplay {
     SSD1306Wire(uint8_t address, int sda = -1, int scl = -1, OLEDDISPLAY_GEOMETRY g = GEOMETRY_128_64, HW_I2C i2cBus = I2C_ONE, long  frequency = 700000) {
       setGeometry(g);
 
-      this->_address = _address;
-      this->_sda = _sda;
-      this->_scl = _scl;
+      this->_address = address;
+      this->_sda = sda;
+      this->_scl = scl;
 #if !defined(ARDUINO_ARCH_ESP32)
       this->_wire = &Wire;
 #else
       this->_wire = (i2cBus == I2C_ONE) ? &Wire : &Wire1;
 #endif
-      this->_frequency = _frequency;
+      this->_frequency = frequency;
     }
 
     bool connect() {
@@ -118,10 +117,10 @@ class SSD1306Wire : public OLEDDisplay {
           for (x = 0; x < this->width(); x++) {
            uint16_t pos = x + y * this->width();
            if (buffer[pos] != buffer_back[pos]) {
-             minBoundY = std::min(minBoundY, y);
-             maxBoundY = std::max(maxBoundY, y);
-             minBoundX = std::min(minBoundX, x);
-             maxBoundX = std::max(maxBoundX, x);
+             minBoundY = min(minBoundY, y);
+             maxBoundY = max(maxBoundY, y);
+             minBoundX = min(minBoundX, x);
+             maxBoundX = max(maxBoundX, x);
            }
            buffer_back[pos] = buffer[pos];
          }

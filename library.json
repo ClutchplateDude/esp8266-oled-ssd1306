@@ -20,6 +20,10 @@
         "name": "Fabrice Weinberg",
         "email": "fabrice@weinberg.me"
     }
+    {
+        "name": "Lutz Kretzschmar (this fork)",
+        "email": "lutz@stmuc.com"
+    }
   ],
   "frameworks": "arduino",
   "platforms": [
