@@ -34,6 +34,9 @@
   * - test/finish dislplay.printf() on mbed-os
   */
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuseless-cast"
+
 #include "OLEDDisplay.h"
 
 OLEDDisplay::OLEDDisplay() {
@@ -126,8 +129,8 @@ void OLEDDisplay::resetDisplay(void) {
   display();
 }
 
-void OLEDDisplay::setColor(OLEDDISPLAY_COLOR color) {
-  this->color = color;
+void OLEDDisplay::setColor(OLEDDISPLAY_COLOR _color) {
+  this->color = _color;
 }
 
 OLEDDISPLAY_COLOR OLEDDisplay::getColor() {
@@ -136,7 +139,7 @@ OLEDDISPLAY_COLOR OLEDDisplay::getColor() {
 
 void OLEDDisplay::setPixel(int16_t x, int16_t y) {
   if (x >= 0 && x < this->width() && y >= 0 && y < this->height()) {
-    switch (color) {
+    switch (this->color) {
       case WHITE:   buffer[x + (y / 8) * this->width()] |=  (1 << (y & 7)); break;
       case BLACK:   buffer[x + (y / 8) * this->width()] &= ~(1 << (y & 7)); break;
       case INVERSE: buffer[x + (y / 8) * this->width()] ^=  (1 << (y & 7)); break;
@@ -144,9 +147,9 @@ void OLEDDisplay::setPixel(int16_t x, int16_t y) {
   }
 }
 
-void OLEDDisplay::setPixelColor(int16_t x, int16_t y, OLEDDISPLAY_COLOR color) {
+void OLEDDisplay::setPixelColor(int16_t x, int16_t y, OLEDDISPLAY_COLOR _color) {
   if (x >= 0 && x < this->width() && y >= 0 && y < this->height()) {
-    switch (color) {
+    switch (_color) {
       case WHITE:   buffer[x + (y / 8) * this->width()] |=  (1 << (y & 7)); break;
       case BLACK:   buffer[x + (y / 8) * this->width()] &= ~(1 << (y & 7)); break;
       case INVERSE: buffer[x + (y / 8) * this->width()] ^=  (1 << (y & 7)); break;
@@ -156,7 +159,7 @@ void OLEDDisplay::setPixelColor(int16_t x, int16_t y, OLEDDISPLAY_COLOR color) {
 
 void OLEDDisplay::clearPixel(int16_t x, int16_t y) {
   if (x >= 0 && x < this->width() && y >= 0 && y < this->height()) {
-    switch (color) {
+    switch (this->color) {
       case BLACK:   buffer[x + (y >> 3) * this->width()] |=  (1 << (y & 7)); break;
       case WHITE:   buffer[x + (y >> 3) * this->width()] &= ~(1 << (y & 7)); break;
       case INVERSE: buffer[x + (y >> 3) * this->width()] ^=  (1 << (y & 7)); break;
@@ -408,7 +411,7 @@ void OLEDDisplay::drawHorizontalLine(int16_t x, int16_t y, int16_t length) {
 
   uint8_t drawBit = 1 << (y & 7);
 
-  switch (color) {
+  switch (this->color) {
     case WHITE:   while (length--) {
         *bufferPtr++ |= drawBit;
       }; break;
@@ -451,7 +454,7 @@ void OLEDDisplay::drawVerticalLine(int16_t x, int16_t y, int16_t length) {
       drawBit &= (0xFF >> (yOffset - length));
     }
 
-    switch (color) {
+    switch (this->color) {
       case WHITE:   *bufferPtr |=  drawBit; break;
       case BLACK:   *bufferPtr &= ~drawBit; break;
       case INVERSE: *bufferPtr ^=  drawBit; break;
@@ -464,10 +467,10 @@ void OLEDDisplay::drawVerticalLine(int16_t x, int16_t y, int16_t length) {
   }
 
   if (length >= 8) {
-    switch (color) {
+    switch (this->color) {
       case WHITE:
       case BLACK:
-        drawBit = (color == WHITE) ? 0xFF : 0x00;
+        drawBit = (this->color == WHITE) ? 0xFF : 0x00;
         do {
           *bufferPtr = drawBit;
           bufferPtr += this->width();
@@ -486,7 +489,7 @@ void OLEDDisplay::drawVerticalLine(int16_t x, int16_t y, int16_t length) {
 
   if (length > 0) {
     drawBit = (1 << (length & 7)) - 1;
-    switch (color) {
+    switch (this->color) {
       case WHITE:   *bufferPtr |=  drawBit; break;
       case BLACK:   *bufferPtr &= ~drawBit; break;
       case INVERSE: *bufferPtr ^=  drawBit; break;
@@ -652,13 +655,13 @@ uint16_t OLEDDisplay::drawString(int16_t xMove, int16_t yMove, const String &str
   return charDrawn;
 }
 
-void OLEDDisplay::drawStringf( int16_t x, int16_t y, char* buffer, String format, ... )
+void OLEDDisplay::drawStringf( int16_t x, int16_t y, char* _buffer, String format, ... )
 {
   va_list myargs;
   va_start(myargs, format);
-  vsprintf(buffer, format.c_str(), myargs);
+  vsprintf(_buffer, format.c_str(), myargs);
   va_end(myargs);
-  drawString( x, y, buffer );
+  drawString( x, y, _buffer );
 }
 
 uint16_t OLEDDisplay::drawStringMaxWidth(int16_t xMove, int16_t yMove, uint16_t maxLineWidth, const String &strUser) {
@@ -746,18 +749,18 @@ uint16_t OLEDDisplay::getStringWidth(const String &strUser) {
   return width;
 }
 
-void OLEDDisplay::setTextAlignment(OLEDDISPLAY_TEXT_ALIGNMENT textAlignment) {
-  this->textAlignment = textAlignment;
+void OLEDDisplay::setTextAlignment(OLEDDISPLAY_TEXT_ALIGNMENT _textAlignment) {
+  this->textAlignment = _textAlignment;
 }
 
-void OLEDDisplay::setFont(const uint8_t *fontData) {
-  this->fontData = fontData;
+void OLEDDisplay::setFont(const uint8_t *_fontData) {
+  this->fontData = _fontData;
   // New font, so must recalculate. Whatever was there is gone at next print.
   setLogBuffer();
 }
 
-void OLEDDisplay::setFont(const char *fontData) {
-  setFont(static_cast<const uint8_t*>(reinterpret_cast<const void*>(fontData)));
+void OLEDDisplay::setFont(const char *_fontData) {
+  setFont(static_cast<const uint8_t*>(reinterpret_cast<const void*>(_fontData)));
 }
 
 void OLEDDisplay::displayOn(void) {
@@ -1218,3 +1221,5 @@ char DefaultFontTableLookup(const uint8_t ch) {
 
 	return (uint8_t) 0; // otherwise: return zero, if character has to be ignored
 }
+
+#pragma GCC diagnostic pop
