@@ -36,6 +36,7 @@
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wuseless-cast"
+#pragma GCC diagnostic ignored "-Wsign-compare"
 
 #include "OLEDDisplay.h"
 
@@ -580,8 +581,8 @@ uint16_t OLEDDisplay::drawStringInternal(int16_t xMove, int16_t yMove, const cha
   }
 
   // Don't draw anything if it is not on the screen.
-  if (xMove + textWidth  < 0 || xMove >= this->width() ) {return 0;}
-  if (yMove + textHeight < 0 || yMove >= this->height()) {return 0;}
+  if ((xMove + (int16_t)textWidth) < 0 || xMove >= this->width() ) {return 0;}
+  if ((yMove + textHeight) < 0 || yMove >= this->height()) {return 0;}
 
   for (uint16_t j = 0; j < textLength; j++) {
     int16_t xPos = xMove + cursorX;
