@@ -1,13 +1,13 @@
 {
   "name": "ESP8266 and ESP32 OLED driver for SSD1306 displays",
-  "version": "4.6.1",
+  "version": "4.6.2",
   "keywords": "ssd1306, oled, display, i2c",
-  "description": "I2C display driver for SSD1306 OLED displays connected to ESP8266, ESP32, Mbed-OS",
+  "description": "I2C display driver for SSD1306 OLED displays connected to ESP8266, ESP32, Mbed-OS, RP2040",
   "license": "MIT",
   "repository":
   {
     "type": "git",
-    "url": "https://github.com/ThingPulse/esp8266-oled-ssd1306"
+    "url": "https://github.com/ClutchplateDude/esp8266-oled-ssd1306"
   },
   "authors":
   [
@@ -19,6 +19,10 @@
     {
         "name": "Fabrice Weinberg",
         "email": "fabrice@weinberg.me"
+    }
+    {
+        "name": "Lutz Kretzschmar (this fork)",
+        "email": "lutz@stmuc.com"
     }
   ],
   "frameworks": "arduino",
